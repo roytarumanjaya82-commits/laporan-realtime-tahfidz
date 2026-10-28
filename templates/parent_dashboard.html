@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block page_title %}Perkembangan Anak{% endblock %}
+{% block content %}
+<p style="margin-top:0;color:var(--muted)">
+  Halo, <strong>{{ session.get('nama') }}</strong>. Pantau hasil belajar tahfidz anak Anda secara realtime.
+  Tahun ajaran: <strong>{{ current_ta.nama if current_ta else '-' }}</strong> · Semester {{ current_ta.semester if current_ta else '-' }}.
+</p>
+
+{% if session.get('must_change_password') %}
+<div class="flash warning">
+  Anda masih memakai password default.
+  <a href="{{ url_for('ganti_password') }}">Ganti password sekarang</a> agar akun lebih aman.
+</div>
+{% endif %}
+
+{% if anak_list %}
+<div class="grid grid-{{ 2 if anak_list|length > 1 else 1 }}" style="margin-bottom:1.25rem">
+  {% for a in anak_list %}
+  <div class="panel">
+    <div class="panel-header">
+      <h2>{{ a.nama }}</h2>
+      <a class="btn btn-sm btn-primary" href="{{ url_for('laporan_detail', sid=a.id) }}">Lihat Laporan</a>
+    </div>
+    <div class="panel-body">
+      <div class="metric-cards" style="grid-template-columns:1fr 1fr;margin-bottom:0.75rem">
+        <div class="metric">
+          <div class="label">Kelas</div>
+          <div class="value" style="font-size:1.1rem">{{ a.nama_kelas }}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Musyrif</div>
+          <div class="value" style="font-size:1.1rem">{{ a.nama_musyrif or '—' }}</div>
+        </div>
+        <div class="metric">
+          <div class="label">Capaian Hafalan</div>
+          <div class="value" style="font-size:1.15rem">{{ a.progress.capaian_teks }}</div>
+        </div>
+        <div class="metric">
+          <div class="label">% Target Lulus (4 Juz)</div>
+          <div class="value" style="font-size:1.15rem">{{ a.progress.persen_lulus }}%</div>
+          <div class="progress-bar" style="margin-top:0.45rem"><span style="width:{{ a.progress.persen_lulus }}%"></span></div>
+        </div>
+      </div>
+      <span class="badge badge-{{ a.progress.status.warna }}">{{ a.progress.status.label }}</span>
+      <span class="badge badge-muted">Target periode: {{ a.progress.target_kumulatif }} Juz</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="panel">
+  <div class="panel-body empty">
+    Belum ada data anak yang terhubung ke akun Anda.
+    Hubungi admin sekolah agar nama orang tua dicantumkan pada data siswa.
+  </div>
+</div>
+{% endif %}
+
+<div class="panel">
+  <div class="panel-header"><h2>Aktivitas Setoran Terbaru</h2></div>
+  <div class="panel-body table-wrap">
+    {% if setoran_terbaru %}
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Waktu</th><th>Anak</th><th>Jenis</th><th>Surah / Ayat</th><th>Volume</th><th>Nilai</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in setoran_terbaru %}
+        <tr>
+          <td>{{ s.tanggal.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ s.nama_siswa }}<br><small>{{ s.nama_kelas }}</small></td>
+          <td>{{ s.jenis }}</td>
+          <td>{{ s.surah }}</td>
+          <td>{{ s.volume_halaman }} hlm</td>
+          <td>{{ s.predikat }}</td>
+          <td><span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">Belum ada setoran tercatat.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

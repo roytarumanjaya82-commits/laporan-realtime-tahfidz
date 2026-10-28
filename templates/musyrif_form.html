@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block page_title %}{{ 'Edit' if item else 'Tambah' }} Musyrif{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:640px">
+  <div class="panel-header"><h2>{{ 'Edit' if item else 'Tambah' }} Musyrif</h2></div>
+  <div class="panel-body">
+    <form method="post" class="form-grid">
+      <div>
+        <label>Kode</label>
+        <input type="text" name="kode" required value="{{ item.kode if item else '' }}" placeholder="M001">
+      </div>
+      <div>
+        <label>Nama</label>
+        <input type="text" name="nama" required value="{{ item.nama if item else '' }}">
+      </div>
+      <div>
+        <label>Gelar</label>
+        <input type="text" name="gelar" value="{{ item.gelar if item and item.gelar else '' }}" placeholder="S.Pd.I">
+      </div>
+      <div>
+        <label>Telepon</label>
+        <input type="text" name="telepon" value="{{ item.telepon if item and item.telepon else '' }}">
+      </div>
+      {% if item %}
+      <div>
+        <label>Status</label>
+        <select name="aktif">
+          <option value="1" {% if item.aktif %}selected{% endif %}>Aktif</option>
+          <option value="0" {% if not item.aktif %}selected{% endif %}>Nonaktif</option>
+        </select>
+      </div>
+      {% endif %}
+      <div class="full form-actions">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <a class="btn btn-ghost" href="{{ url_for('musyrif_list') }}">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

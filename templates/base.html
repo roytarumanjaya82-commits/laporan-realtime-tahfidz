@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ app_title }}{% endblock %} — SMPM 22</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% if session.get('user_id') %}
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <button class="mobile-toggle" type="button" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+    <div class="brand">
+      <div class="brand-mark">Tahfidz Realtime</div>
+      <div class="brand-sub">{{ school_name }}<br>Jenjang 7–9 · Target 4 Juz</div>
+    </div>
+    <nav class="nav">
+      {% if session.get('role') == 'orang_tua' %}
+      <div class="nav-section">Orang Tua</div>
+      <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Perkembangan Anak</a>
+      <a href="{{ url_for('laporan_index') }}" class="{% if request.endpoint and request.endpoint.startswith('laporan') %}active{% endif %}">Laporan Lengkap</a>
+      <a href="{{ url_for('ganti_password') }}" class="{% if request.endpoint == 'ganti_password' %}active{% endif %}">Ganti Password</a>
+      {% else %}
+      <div class="nav-section">Utama</div>
+      <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{{ url_for('setoran') }}" class="{% if request.endpoint == 'setoran' %}active{% endif %}">Setoran Realtime</a>
+      <a href="{{ url_for('laporan_index') }}" class="{% if request.endpoint and request.endpoint.startswith('laporan') %}active{% endif %}">Laporan Murid</a>
+
+      <div class="nav-section">Data Master</div>
+      <a href="{{ url_for('siswa_list') }}" class="{% if request.endpoint == 'siswa_list' or request.endpoint in ['siswa_tambah','siswa_edit'] %}active{% endif %}">Siswa</a>
+      {% if session.get('role') == 'admin' %}
+      <a href="{{ url_for('siswa_pindah_musyrif') }}" class="{% if request.endpoint == 'siswa_pindah_musyrif' %}active{% endif %}">Pindah Musyrif</a>
+      {% endif %}
+      <a href="{{ url_for('kelas_list') }}" class="{% if request.endpoint and request.endpoint.startswith('kelas') %}active{% endif %}">Kelas</a>
+      <a href="{{ url_for('musyrif_list') }}" class="{% if request.endpoint and request.endpoint.startswith('musyrif') %}active{% endif %}">Musyrif</a>
+      <a href="{{ url_for('blanko_page') }}" class="{% if request.endpoint and request.endpoint.startswith('blanko') %}active{% endif %}">Blanko Unduh/Upload</a>
+
+      {% if session.get('role') == 'admin' %}
+      <div class="nav-section">Administrasi</div>
+      <a href="{{ url_for('tahun_ajaran') }}" class="{% if request.endpoint and 'tahun' in request.endpoint %}active{% endif %}">Tahun Ajaran</a>
+      <a href="{{ url_for('orang_tua_list') }}" class="{% if request.endpoint and request.endpoint.startswith('orang_tua') %}active{% endif %}">Akun Orang Tua</a>
+      <a href="{{ url_for('users_page') }}" class="{% if request.endpoint == 'users_page' %}active{% endif %}">Pengguna Staf</a>
+      {% endif %}
+
+      <div class="nav-section">Akun</div>
+      <a href="{{ url_for('ganti_password') }}" class="{% if request.endpoint == 'ganti_password' %}active{% endif %}">Ganti Password</a>
+      {% endif %}
+
+      <a href="{{ url_for('logout') }}">Keluar</a>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+      <div class="topbar-meta">
+        {% if tahun_list and session.get('role') != 'orang_tua' %}
+        <form action="#" onchange="if(this.ta.value) location.href='/set-tahun/'+this.ta.value">
+          <select name="ta" class="ta-select" title="Pilih tahun ajaran">
+            {% for t in tahun_list %}
+            <option value="{{ t.id }}" {% if current_ta and current_ta.id == t.id %}selected{% endif %}>
+              {{ t.nama }} · Sem {{ t.semester }}{% if t.aktif %} ★{% endif %}
+            </option>
+            {% endfor %}
+          </select>
+        </form>
+        {% elif current_ta %}
+        <span class="user-chip">{{ current_ta.nama }} · Sem {{ current_ta.semester }}</span>
+        {% endif %}
+        <span class="user-chip">{{ session.get('nama') }} ({{ session.get('role') }})</span>
+      </div>
+    </header>
+
+    <div class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-wrap">
+        {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% else %}
+  {% block auth %}{% endblock %}
+{% endif %}
+</body>
+</html>

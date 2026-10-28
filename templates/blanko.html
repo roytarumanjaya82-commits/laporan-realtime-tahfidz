@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block page_title %}Blanko Unduh & Upload{% endblock %}
+{% block content %}
+<p style="color:var(--muted);margin-top:0;max-width:760px">
+  Satu file Excel berisi <strong>satu tabel gabungan</strong> data musyrif, kelas, dan siswa.
+  Data terikat ke tahun ajaran
+  <strong>{{ current_ta.nama if current_ta else 'belum dipilih' }}</strong>
+  · Sem {{ current_ta.semester if current_ta else '-' }}.
+</p>
+
+<div class="panel" style="max-width:720px">
+  <div class="panel-header"><h2>Blanko Data Tahfidz (Gabungan)</h2></div>
+  <div class="panel-body">
+    <p style="margin-top:0;color:var(--muted);font-size:0.92rem;line-height:1.6">
+      Kolom:
+      <code>kode_musyrif</code>, <code>nama_musyrif</code>, <code>gelar_musyrif</code>, <code>telepon_musyrif</code>,
+      <code>nama_kelas</code>, <code>jenjang</code>,
+      <code>nis</code>, <code>nama_siswa</code>, <code>jenis_kelamin</code>,
+      <code>nama_orang_tua</code>, <code>telepon_orang_tua</code>.
+      <br>Satu baris = satu siswa; data musyrif/kelas diulang pada baris yang sama kelompoknya.
+      Saat upload, sistem otomatis membuat/memperbarui musyrif → kelas → siswa.
+    </p>
+    <div class="form-actions" style="margin-top:0.5rem">
+      <a class="btn btn-secondary" href="{{ url_for('blanko_unduh') }}">⬇ Unduh Blanko Excel</a>
+    </div>
+    {% if session.get('role') == 'admin' %}
+    <hr style="border:none;border-top:1px solid var(--border);margin:1.25rem 0">
+    <form method="post" action="{{ url_for('blanko_upload') }}" enctype="multipart/form-data">
+      <label>Upload file yang sudah diisi</label>
+      <input type="file" name="file" accept=".xlsx" required style="margin:0.5rem 0 0.75rem">
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">⬆ Upload &amp; Impor</button>
+      </div>
+    </form>
+    {% else %}
+    <p style="font-size:0.85rem;color:var(--muted)">Upload hanya bisa dilakukan oleh admin.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="panel" style="margin-top:1.25rem;max-width:720px">
+  <div class="panel-header"><h2>Petunjuk</h2></div>
+  <div class="panel-body">
+    <ol style="margin:0;padding-left:1.2rem;color:var(--ink);line-height:1.7">
+      <li>Pilih tahun ajaran yang benar di pojok kanan atas.</li>
+      <li>Unduh blanko, isi data (hapus baris contoh jika perlu).</li>
+      <li>Upload sekali saja — musyrif, kelas, dan siswa ikut terproses.</li>
+      <li>Jika kode musyrif / nama kelas / NIS sudah ada, data diperbarui.</li>
+      <li>Untuk memindahkan siswa antar musyrif setelah data masuk, gunakan menu
+        <a href="{{ url_for('siswa_pindah_musyrif') }}">Pindah Musyrif</a>.</li>
+    </ol>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block page_title %}Laporan Hasil Belajar{% endblock %}
+{% block content %}
+<form method="get" class="toolbar">
+  <div class="field">
+    <label>Cari murid</label>
+    <input type="text" name="q" value="{{ q }}" placeholder="Nama / NIS">
+  </div>
+  {% if session.get('role') != 'orang_tua' %}
+  <div class="field">
+    <label>Kelas</label>
+    <select name="kelas_id">
+      <option value="">Semua kelas</option>
+      {% for k in kelas %}
+      <option value="{{ k.id }}" {% if kelas_id|string == k.id|string %}selected{% endif %}>{{ k.nama }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+  <button class="btn btn-secondary" type="submit">Tampilkan</button>
+</form>
+
+<div class="panel">
+  <div class="panel-header">
+    <h2>Progress Hafalan Realtime — {{ current_ta.nama if current_ta else '-' }} Sem {{ current_ta.semester if current_ta else '-' }}</h2>
+  </div>
+  <div class="panel-body table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>NIS</th><th>Nama</th><th>Kelas</th><th>Musyrif</th>
+          <th>Capaian</th><th>Target</th><th>% Lulus (4 Juz)</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in daftar %}
+        <tr>
+          <td>{{ s.nis }}</td>
+          <td><strong>{{ s.nama }}</strong></td>
+          <td>{{ s.nama_kelas }}</td>
+          <td>{{ s.nama_musyrif or '-' }}</td>
+          <td>{{ s.progress.capaian_teks }}</td>
+          <td>{{ s.progress.target_kumulatif }} Juz</td>
+          <td style="min-width:130px">
+            <div class="progress-bar"><span style="width:{{ s.progress.persen_lulus }}%"></span></div>
+            <small>{{ s.progress.persen_lulus }}%</small>
+          </td>
+          <td><span class="badge badge-{{ s.progress.status.warna }}">{{ s.progress.status.label }}</span></td>
+          <td><a class="btn btn-sm btn-primary" href="{{ url_for('laporan_detail', sid=s.id) }}">Detail</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="empty">Belum ada data siswa.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

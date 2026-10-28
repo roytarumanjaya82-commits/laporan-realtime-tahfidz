@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block page_title %}Dashboard Realtime{% endblock %}
+{% block content %}
+<div class="grid grid-4" style="margin-bottom:1.25rem">
+  <div class="stat">
+    <div class="stat-label">Siswa Aktif</div>
+    <div class="stat-value">{{ stats.siswa }}</div>
+    <div class="stat-hint">Tahun {{ current_ta.nama if current_ta else '-' }}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Kelas / Halaqah</div>
+    <div class="stat-value">{{ stats.kelas }}</div>
+    <div class="stat-hint">Jenjang 7–9</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Musyrif</div>
+    <div class="stat-value">{{ stats.musyrif }}</div>
+    <div class="stat-hint">Pembimbing aktif</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Setoran Hari Ini</div>
+    <div class="stat-value">{{ stats.setoran_hari_ini }}</div>
+    <div class="stat-hint">{{ now.strftime('%d %b %Y') }}</div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Progress Rata-rata per Kelas</h2>
+      <a class="btn btn-sm btn-secondary" href="{{ url_for('laporan_index') }}">Lihat Laporan</a>
+    </div>
+    <div class="panel-body table-wrap">
+      {% if progress_kelas %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Kelas</th>
+            <th>Siswa</th>
+            <th>Capaian (rata-rata)</th>
+            <th>Target Sem</th>
+            <th>%</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for k in progress_kelas %}
+          <tr>
+            <td><strong>{{ k.nama }}</strong> <span class="badge badge-muted">{{ k.jenjang }}</span></td>
+            <td>{{ k.jml_siswa }}</td>
+            <td>{{ k.progress.capaian_teks }}</td>
+            <td>{{ k.progress.target_kumulatif }} Juz</td>
+            <td style="min-width:120px">
+              <div class="progress-bar"><span style="width:{{ k.progress.persen_periode }}%"></span></div>
+              <small>{{ k.progress.persen_periode }}%</small>
+            </td>
+            <td><span class="badge badge-{{ k.progress.status.warna }}">{{ k.progress.status.label }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">Belum ada data kelas. Upload blanko atau tambah manual.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Log Setoran Terbaru</h2>
+      <a class="btn btn-sm btn-primary" href="{{ url_for('setoran') }}">+ Input Setoran</a>
+    </div>
+    <div class="panel-body table-wrap">
+      {% if setoran_terbaru %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Waktu</th>
+            <th>Murid</th>
+            <th>Jenis</th>
+            <th>Volume</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in setoran_terbaru %}
+          <tr>
+            <td>{{ s.tanggal.strftime('%d/%m %H:%M') }}</td>
+            <td>{{ s.nama_siswa }}<br><small>{{ s.nama_kelas }}</small></td>
+            <td>{{ s.jenis }}</td>
+            <td>{{ s.volume_halaman }} hlm</td>
+            <td>
+              <span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">Belum ada setoran. Mulai input di menu Setoran Realtime.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:1.25rem">
+  <div class="panel-header"><h2>Skema Target Hafalan (V2) — Total Lulus 4 Juz</h2></div>
+  <div class="panel-body table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Tingkat</th>
+          <th>Periode</th>
+          <th>Target Ziyadah</th>
+          <th>Output Kumulatif</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for (jenjang, sem), meta in target_map.items() %}
+        <tr {% if current_ta and jenjang == 7 and current_ta.semester|int == sem %}style="background:#e6f4ef"{% endif %}>
+          <td>Kelas {{ jenjang }} SMP</td>
+          <td>Semester {{ sem }}</td>
+          <td>{{ meta.ziyadah }}</td>
+          <td><strong>{{ meta.kumulatif }} Juz Mutqin</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

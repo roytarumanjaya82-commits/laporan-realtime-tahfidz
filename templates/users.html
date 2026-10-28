@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block page_title %}Pengguna Sistem{% endblock %}
+{% block content %}
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header"><h2>Tambah Pengguna</h2></div>
+    <div class="panel-body">
+      <form method="post" class="form-grid">
+        <div>
+          <label>Username</label>
+          <input type="text" name="username" required>
+        </div>
+        <div>
+          <label>Nama Lengkap</label>
+          <input type="text" name="nama_lengkap" required>
+        </div>
+        <div>
+          <label>Role</label>
+          <select name="role">
+            <option value="musyrif">Musyrif</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div>
+          <label>Password</label>
+          <input type="password" name="password" required>
+        </div>
+        <div class="full form-actions">
+          <button class="btn btn-primary" type="submit">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Daftar Pengguna</h2></div>
+    <div class="panel-body table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Username</th><th>Nama</th><th>Role</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for u in daftar %}
+          <tr>
+            <td>{{ u.username }}</td>
+            <td>{{ u.nama_lengkap }}</td>
+            <td><span class="badge badge-info">{{ u.role }}</span></td>
+            <td><span class="badge badge-{{ 'success' if u.aktif else 'muted' }}">{{ 'Aktif' if u.aktif else 'Nonaktif' }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

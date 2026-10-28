@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block page_title %}Pindah Siswa antar Musyrif{% endblock %}
+{% block content %}
+<p style="margin-top:0;color:var(--muted);max-width:720px">
+  Pilih siswa, lalu pilih musyrif tujuan. Hanya admin yang dapat memindahkan.
+</p>
+
+<form method="get" class="toolbar">
+  <div class="field">
+    <label>Filter musyrif asal</label>
+    <select name="dari" onchange="this.form.submit()">
+      <option value="">Semua musyrif</option>
+      <option value="0" {% if dari == '0' %}selected{% endif %}>Tanpa musyrif</option>
+      {% for m in musyrif %}
+      <option value="{{ m.id }}" {% if dari|string == m.id|string %}selected{% endif %}>
+        {{ m.kode }} — {{ m.nama }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+  <a class="btn btn-ghost" href="{{ url_for('siswa_list') }}">← Kembali ke Siswa</a>
+</form>
+
+<form method="post">
+  <div class="panel" style="margin-bottom:1rem">
+    <div class="panel-header">
+      <h2>Pilih Siswa ({{ daftar|length }})</h2>
+      <label style="font-size:0.85rem;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:0.4rem;margin:0">
+        <input type="checkbox" id="checkAll" onclick="document.querySelectorAll('.chk-siswa').forEach(c=>c.checked=this.checked)">
+        Pilih semua
+      </label>
+    </div>
+    <div class="panel-body table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th style="width:40px"></th>
+            <th>NIS</th>
+            <th>Nama</th>
+            <th>Kelas</th>
+            <th>Musyrif saat ini</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in daftar %}
+          <tr>
+            <td><input class="chk-siswa" type="checkbox" name="siswa_ids" value="{{ s.id }}"></td>
+            <td>{{ s.nis }}</td>
+            <td><strong>{{ s.nama }}</strong></td>
+            <td>{{ s.nama_kelas }}</td>
+            <td>{{ s.nama_musyrif or '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="empty">Tidak ada siswa pada filter ini.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel" style="max-width:480px">
+    <div class="panel-header"><h2>Musyrif Tujuan</h2></div>
+    <div class="panel-body">
+      <input type="hidden" name="dari" value="{{ dari }}">
+      <label>Pindahkan ke</label>
+      <select name="musyrif_tujuan" required style="margin-bottom:1rem">
+        <option value="">— Pilih musyrif tujuan —</option>
+        {% for m in musyrif %}
+        <option value="{{ m.id }}">{{ m.kode }} — {{ m.nama }}{% if m.gelar %}, {{ m.gelar }}{% endif %}</option>
+        {% endfor %}
+        <option value="0">Lepas dari musyrif (tanpa pembimbing)</option>
+      </select>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit"
+                onclick="return document.querySelectorAll('.chk-siswa:checked').length
+                  ? confirm('Pindahkan siswa terpilih ke musyrif tujuan?')
+                  : (alert('Pilih minimal satu siswa.'), false)">
+          Pindahkan Siswa
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+{% endblock %}

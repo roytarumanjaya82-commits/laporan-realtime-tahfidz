@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block page_title %}Laporan — {{ siswa.nama }}{% endblock %}
+{% block content %}
+<div style="margin-bottom:1rem">
+  <a class="btn btn-ghost btn-sm" href="{{ url_for('laporan_index') }}">← Kembali</a>
+  <button class="btn btn-secondary btn-sm" onclick="window.print()">Cetak / PDF</button>
+</div>
+
+<div class="report-hero">
+  <h2>{{ siswa.nama }}</h2>
+  <div style="opacity:0.85;font-size:0.95rem">Laporan Hasil Belajar Tahfidz Al-Qur'an Realtime · Jenjang {{ siswa.jenjang }} SMP</div>
+  <div class="meta">
+    <div><span>Kelas / Jenjang</span><strong>{{ siswa.nama_kelas }} / {{ siswa.jenjang }} SMP</strong></div>
+    <div><span>Tahun Ajaran</span><strong>{{ ta.nama }} · Semester {{ ta.semester }}</strong></div>
+    <div><span>Musyrif Pembimbing</span><strong>{% if siswa.nama_musyrif %}Ustadz/ah {{ siswa.nama_musyrif }}{% if siswa.gelar_musyrif %}, {{ siswa.gelar_musyrif }}{% endif %}{% else %}—{% endif %}</strong></div>
+    <div><span>Target Total (3 Tahun)</span><strong>4 Juz (Juz 30, 29, 28, 27)</strong></div>
+    <div><span>NIS</span><strong>{{ siswa.nis }}</strong></div>
+    <div><span>Status Sistem</span><strong>Realtime Sync (Aktif)</strong></div>
+  </div>
+</div>
+
+<div class="metric-cards">
+  <div class="metric">
+    <div class="label">Total Capaian Hafalan</div>
+    <div class="value">{{ progress.capaian_teks }}</div>
+  </div>
+  <div class="metric">
+    <div class="label">Target Kumulatif Saat Ini</div>
+    <div class="value">{{ progress.target_kumulatif }} Juz</div>
+  </div>
+  <div class="metric">
+    <div class="label">% Ketercapaian Target Lulus</div>
+    <div class="value">{{ progress.persen_lulus }}%</div>
+    <div class="progress-bar" style="margin-top:0.5rem"><span style="width:{{ progress.persen_lulus }}%"></span></div>
+  </div>
+  <div class="metric">
+    <div class="label">Status Capaian</div>
+    <div class="value" style="font-size:1.1rem">
+      <span class="badge badge-{{ progress.status.warna }}">{{ progress.status.label }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="panel" style="margin-bottom:1.25rem">
+  <div class="panel-header"><h2>III. Log Setoran Harian (Rekapitulasi Realtime)</h2></div>
+  <div class="panel-body table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Tanggal & Waktu</th>
+          <th>Jenis</th>
+          <th>Surah / Ayat</th>
+          <th>Volume</th>
+          <th>Nilai & Kualitas</th>
+          <th>Status</th>
+          <th>Catatan Musyrif</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in log %}
+        <tr>
+          <td>{{ s.tanggal.strftime('%d %b %Y · %H:%M') }} WIB</td>
+          <td>{{ s.jenis }}</td>
+          <td>{{ s.surah }}</td>
+          <td>{{ s.volume_halaman }} Halaman</td>
+          <td>{{ s.predikat }}</td>
+          <td><span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span></td>
+          <td>{{ s.catatan or '—' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="empty">Belum ada setoran untuk murid ini.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="grid grid-2" style="margin-bottom:1.25rem">
+  <div class="panel">
+    <div class="panel-header"><h2>IV. Evaluasi Kualitas & Kelancaran</h2></div>
+    <div class="panel-body table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>No</th><th>Elemen Evaluasi</th><th>Nilai</th><th>Predikat</th></tr>
+        </thead>
+        <tbody>
+          {% for e in evaluasi %}
+          <tr>
+            <td>{{ e.no }}</td>
+            <td>{{ e.elemen }}</td>
+            <td>{{ e.nilai }} / 100</td>
+            <td>{{ e.predikat }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if session.get('role') != 'orang_tua' %}
+      <form method="post" action="{{ url_for('evaluasi_update', sid=siswa.id) }}" class="form-grid" style="margin-top:1.25rem">
+        <div>
+          <label>Kelancaran</label>
+          <input type="number" name="kelancaran" min="0" max="100" value="{{ evaluasi[0].nilai }}">
+        </div>
+        <div>
+          <label>Tajwid</label>
+          <input type="number" name="tajwid" min="0" max="100" value="{{ evaluasi[1].nilai }}">
+        </div>
+        <div>
+          <label>Makharijul Huruf</label>
+          <input type="number" name="makharijul" min="0" max="100" value="{{ evaluasi[2].nilai }}">
+        </div>
+        <div>
+          <label>Adab & Kedisiplinan</label>
+          <input type="number" name="adab" min="0" max="100" value="{{ evaluasi[3].nilai }}">
+        </div>
+        <div class="full form-actions">
+          <button class="btn btn-primary" type="submit">Perbarui Evaluasi</button>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>V. Pemetaan Target Hafalan (Jenjang 7–9)</h2></div>
+    <div class="panel-body table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Tingkat</th><th>Periode</th><th>Target Ziyadah</th><th>Kumulatif</th></tr>
+        </thead>
+        <tbody>
+          {% for t in targets %}
+          <tr {% if t.aktif %}style="background:#e6f4ef"{% endif %}>
+            <td>{{ t.tingkat }}{% if t.aktif %} ★{% endif %}</td>
+            <td>{{ t.periode }}</td>
+            <td>{{ t.ziyadah }}</td>
+            <td><strong>{{ t.kumulatif }} Juz</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="margin:1rem 0 0;font-size:0.85rem;color:var(--muted)">
+        Target periode aktif: {{ progress.target_ziyadah }}
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

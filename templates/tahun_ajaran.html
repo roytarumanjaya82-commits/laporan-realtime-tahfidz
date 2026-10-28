@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block page_title %}Tahun Ajaran{% endblock %}
+{% block content %}
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header"><h2>Tambah Tahun Ajaran</h2></div>
+    <div class="panel-body">
+      <form method="post" class="form-grid">
+        <div>
+          <label>Nama (contoh: 2026/2027)</label>
+          <input type="text" name="nama" required placeholder="2026/2027">
+        </div>
+        <div>
+          <label>Semester</label>
+          <select name="semester">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+          </select>
+        </div>
+        <div class="full form-actions">
+          <button class="btn btn-primary" type="submit">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Daftar Tahun Ajaran</h2></div>
+    <div class="panel-body table-wrap">
+      <table class="data">
+        <thead>
+          <tr><th>Nama</th><th>Semester</th><th>Status</th><th>Aksi</th></tr>
+        </thead>
+        <tbody>
+          {% for t in daftar %}
+          <tr>
+            <td><strong>{{ t.nama }}</strong></td>
+            <td>
+              <form method="post" action="{{ url_for('update_semester', ta_id=t.id) }}" style="display:flex;gap:0.4rem;align-items:center">
+                <select name="semester" style="width:auto;padding:0.3rem 0.5rem">
+                  <option value="1" {% if t.semester=='1' %}selected{% endif %}>1</option>
+                  <option value="2" {% if t.semester=='2' %}selected{% endif %}>2</option>
+                </select>
+                <button class="btn btn-sm btn-ghost" type="submit">Update</button>
+              </form>
+            </td>
+            <td>
+              {% if t.aktif %}<span class="badge badge-success">Aktif</span>
+              {% else %}<span class="badge badge-muted">Nonaktif</span>{% endif %}
+            </td>
+            <td>
+              {% if not t.aktif %}
+              <a class="btn btn-sm btn-secondary" href="{{ url_for('aktifkan_tahun', ta_id=t.id) }}">Aktifkan</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="empty">Belum ada data.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

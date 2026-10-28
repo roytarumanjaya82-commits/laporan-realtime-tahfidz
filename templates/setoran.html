@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block page_title %}Setoran Realtime{% endblock %}
+{% block content %}
+<div class="grid grid-2">
+  <div class="panel">
+    <div class="panel-header"><h2>Input Setoran Harian</h2></div>
+    <div class="panel-body">
+      <form method="post" class="form-grid">
+        <div class="full">
+          <label>Murid</label>
+          <select name="siswa_id" required>
+            <option value="">— Pilih murid —</option>
+            {% for s in siswa %}
+            <option value="{{ s.id }}">{{ s.nama_kelas }} · {{ s.nama }} ({{ s.nis }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Tanggal & Waktu</label>
+          <input type="datetime-local" name="tanggal" value="{{ now }}" required>
+        </div>
+        <div>
+          <label>Jenis Setoran</label>
+          <select name="jenis" required>
+            <option value="Ziyadah">Ziyadah</option>
+            <option value="Muraja'ah">Muraja'ah</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Surah / Ayat</label>
+          <input type="text" name="surah" required placeholder="Q.S. Al-Mujadila: 1–8 (Juz 28)">
+        </div>
+        <div>
+          <label>Ayat Awal</label>
+          <input type="number" name="ayat_awal" min="1">
+        </div>
+        <div>
+          <label>Ayat Akhir</label>
+          <input type="number" name="ayat_akhir" min="1">
+        </div>
+        <div>
+          <label>Juz</label>
+          <input type="number" name="juz" step="0.1" min="1" max="30" placeholder="28">
+        </div>
+        <div>
+          <label>Volume (Halaman)</label>
+          <input type="number" name="volume_halaman" step="0.5" min="0" value="1" required>
+        </div>
+        <div>
+          <label>Nilai (0–100)</label>
+          <input type="number" name="nilai" min="0" max="100" value="90" required>
+        </div>
+        <div>
+          <label>Status</label>
+          <select name="status">
+            <option value="Lulus">Lulus</option>
+            <option value="Ulang">Ulang</option>
+          </select>
+        </div>
+        <div class="full">
+          <label>Musyrif</label>
+          <select name="musyrif_id">
+            <option value="">— Pilih —</option>
+            {% for m in musyrif %}
+            <option value="{{ m.id }}">{{ m.nama }}{% if m.gelar %}, {{ m.gelar }}{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="full">
+          <label>Catatan Musyrif</label>
+          <textarea name="catatan" placeholder="Makhraj huruf tepat, kelancaran sangat baik."></textarea>
+        </div>
+        <div class="full form-actions">
+          <button class="btn btn-primary" type="submit">Simpan Setoran</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Rekapitulasi Realtime (50 terakhir)</h2></div>
+    <div class="panel-body table-wrap">
+      {% if log %}
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Waktu</th><th>Murid</th><th>Jenis</th><th>Surah</th><th>Vol</th><th>Nilai</th><th>Status</th><th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in log %}
+          <tr>
+            <td>{{ s.tanggal.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>{{ s.nama_siswa }}<br><small>{{ s.nama_kelas }}</small></td>
+            <td>{{ s.jenis }}</td>
+            <td>{{ s.surah }}</td>
+            <td>{{ s.volume_halaman }}</td>
+            <td>{{ s.predikat }}</td>
+            <td><span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span></td>
+            <td>
+              <form method="post" action="{{ url_for('setoran_hapus', stid=s.id) }}" onsubmit="return confirm('Hapus setoran?')">
+                <button class="btn btn-sm btn-danger" type="submit">×</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty">Belum ada log setoran.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

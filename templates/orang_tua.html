@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block page_title %}Akun Orang Tua{% endblock %}
+{% block content %}
+<div class="grid grid-2" style="margin-bottom:1.25rem">
+  <div class="panel">
+    <div class="panel-header"><h2>Password Default Sistem</h2></div>
+    <div class="panel-body">
+      <p style="margin-top:0;color:var(--muted);font-size:0.9rem">
+        Semua akun orang tua baru memakai password default yang sama.
+        Username login = <strong>nama orang tua</strong> (sesuai data siswa).
+      </p>
+      <form method="post" action="{{ url_for('orang_tua_set_default_password') }}" class="form-grid">
+        <div class="full">
+          <label>Password default saat ini</label>
+          <input type="text" name="password_default" value="{{ default_password }}" required>
+        </div>
+        <div class="full form-actions">
+          <button class="btn btn-primary" type="submit">Simpan Default</button>
+        </div>
+      </form>
+      <form method="post" action="{{ url_for('orang_tua_reset_semua') }}" style="margin-top:1rem"
+            onsubmit="return confirm('Reset SEMUA password orang tua ke default?')">
+        <button class="btn btn-danger" type="submit">Reset Semua Password ke Default</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header"><h2>Cara Kerja</h2></div>
+    <div class="panel-body" style="font-size:0.92rem;line-height:1.65;color:var(--ink)">
+      <ol style="margin:0;padding-left:1.2rem">
+        <li>Isi <em>nama_orang_tua</em> saat tambah siswa / upload blanko.</li>
+        <li>Sistem otomatis membuat akun login (username = nama ortu).</li>
+        <li>Beritahu orang tua password default: <strong>{{ default_password }}</strong></li>
+        <li>Orang tua login → lihat perkembangan anak → boleh ganti password sendiri.</li>
+        <li>Jika lupa, admin bisa reset per akun di tabel di bawah.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="panel-header"><h2>Daftar Akun Orang Tua ({{ daftar|length }})</h2></div>
+  <div class="panel-body table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Username (Nama Ortu)</th>
+          <th>Anak</th>
+          <th>Status</th>
+          <th>Password</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in daftar %}
+        <tr>
+          <td><strong>{{ o.username }}</strong></td>
+          <td>{{ o.jml_anak }} murid</td>
+          <td>
+            <span class="badge badge-{{ 'success' if o.aktif else 'muted' }}">
+              {{ 'Aktif' if o.aktif else 'Nonaktif' }}
+            </span>
+          </td>
+          <td>
+            {% if o.must_change_password %}
+            <span class="badge badge-warning">Masih default / perlu diganti</span>
+            {% else %}
+            <span class="badge badge-info">Sudah diganti ortu</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="post" action="{{ url_for('orang_tua_reset', uid=o.id) }}" style="display:inline-flex;gap:0.35rem;align-items:center;flex-wrap:wrap"
+                  onsubmit="return confirm('Reset password untuk {{ o.username }}?')">
+              <input type="text" name="password_custom" placeholder="kosong = default" style="width:140px;padding:0.3rem 0.5rem">
+              <button class="btn btn-sm btn-secondary" type="submit">Reset PW</button>
+            </form>
+            <form method="post" action="{{ url_for('orang_tua_toggle', uid=o.id) }}" style="display:inline">
+              <button class="btn btn-sm btn-ghost" type="submit">
+                {{ 'Nonaktifkan' if o.aktif else 'Aktifkan' }}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="empty">Belum ada akun orang tua. Tambahkan nama ortu pada data siswa.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

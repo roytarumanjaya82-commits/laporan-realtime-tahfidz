@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Masuk{% endblock %}
+{% block auth %}
+<div class="login-page">
+  <div class="login-card">
+    <p class="logo">{{ app_title }}</p>
+    <p class="school">{{ school_name }}</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="post">
+      <div style="margin-bottom:1rem">
+        <label>Username</label>
+        <input type="text" name="username" required autofocus placeholder="admin atau Nama Orang Tua">
+      </div>
+      <div style="margin-bottom:1.25rem">
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%">Masuk</button>
+    </form>
+    <p style="margin-top:1.25rem;font-size:0.8rem;color:var(--muted);text-align:center;line-height:1.5">
+      Staf: <strong>admin</strong> / <strong>admin123</strong><br>
+      Orang tua: username = <strong>nama orang tua</strong>,
+      password awal = <strong>{{ parent_default_password or 'ortuSMPM22' }}</strong>
+    </p>
+  </div>
+</div>
+{% endblock %}

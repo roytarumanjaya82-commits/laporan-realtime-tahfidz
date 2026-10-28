@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_title %}Data Musyrif{% endblock %}
+{% block content %}
+<div class="toolbar">
+  {% if session.get('role') == 'admin' %}
+  <a class="btn btn-primary" href="{{ url_for('musyrif_tambah') }}">+ Tambah Musyrif</a>
+  {% endif %}
+  <a class="btn btn-ghost" href="{{ url_for('blanko_page') }}">Blanko Unduh/Upload</a>
+</div>
+<div class="panel">
+  <div class="panel-header"><h2>Musyrif / Guru Pembimbing — {{ current_ta.nama if current_ta else '-' }}</h2></div>
+  <div class="panel-body table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Kode</th><th>Nama</th><th>Gelar</th><th>Telepon</th><th>Siswa</th><th>Status</th><th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in daftar %}
+        <tr>
+          <td>{{ m.kode }}</td>
+          <td><strong>{{ m.nama }}</strong></td>
+          <td>{{ m.gelar or '-' }}</td>
+          <td>{{ m.telepon or '-' }}</td>
+          <td>{{ m.jml_siswa }}</td>
+          <td>
+            <span class="badge badge-{{ 'success' if m.aktif else 'muted' }}">
+              {{ 'Aktif' if m.aktif else 'Nonaktif' }}
+            </span>
+          </td>
+          <td>
+            {% if session.get('role') == 'admin' %}
+            <a class="btn btn-sm btn-ghost" href="{{ url_for('musyrif_edit', mid=m.id) }}">Edit</a>
+            <form method="post" action="{{ url_for('musyrif_hapus', mid=m.id) }}" style="display:inline" onsubmit="return confirm('Hapus musyrif ini?')">
+              <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="empty">Belum ada musyrif. Gunakan blanko upload atau tambah manual.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

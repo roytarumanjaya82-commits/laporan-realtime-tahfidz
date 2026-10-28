@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block page_title %}{{ 'Edit' if item else 'Tambah' }} Siswa{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:720px">
+  <div class="panel-header"><h2>{{ 'Edit' if item else 'Tambah' }} Siswa</h2></div>
+  <div class="panel-body">
+    <form method="post" class="form-grid">
+      <div>
+        <label>NIS</label>
+        <input type="text" name="nis" required value="{{ item.nis if item else '' }}">
+      </div>
+      <div>
+        <label>Nama Lengkap</label>
+        <input type="text" name="nama" required value="{{ item.nama if item else '' }}">
+      </div>
+      <div>
+        <label>Jenis Kelamin</label>
+        <select name="jenis_kelamin">
+          <option value="L" {% if item and item.jenis_kelamin=='L' %}selected{% endif %}>Laki-laki</option>
+          <option value="P" {% if item and item.jenis_kelamin=='P' %}selected{% endif %}>Perempuan</option>
+        </select>
+      </div>
+      <div>
+        <label>Kelas</label>
+        <select name="kelas_id" required>
+          <option value="">— Pilih —</option>
+          {% for k in kelas %}
+          <option value="{{ k.id }}" {% if item and item.kelas_id == k.id %}selected{% endif %}>{{ k.nama }} (Jenjang {{ k.jenjang }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="full">
+        <label>Musyrif Pembimbing (opsional)</label>
+        <select name="musyrif_id">
+          <option value="">— Ikuti musyrif kelas —</option>
+          {% for m in musyrif %}
+          <option value="{{ m.id }}" {% if item and item.musyrif_id == m.id %}selected{% endif %}>
+            {{ m.kode }} — {{ m.nama }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Nama Orang Tua (username login)</label>
+        <input type="text" name="nama_orang_tua" value="{{ nama_orang_tua or '' }}"
+               placeholder="Contoh: Budi Santoso">
+      </div>
+      <div>
+        <label>Telepon Orang Tua (opsional)</label>
+        <input type="text" name="telepon_orang_tua" placeholder="08xxxxxxxxxx">
+      </div>
+      {% if item %}
+      <div>
+        <label>Status</label>
+        <select name="aktif">
+          <option value="1" {% if item.aktif %}selected{% endif %}>Aktif</option>
+          <option value="0" {% if not item.aktif %}selected{% endif %}>Nonaktif</option>
+        </select>
+      </div>
+      {% endif %}
+      <div class="full" style="font-size:0.82rem;color:var(--muted)">
+        Mengisi nama orang tua akan membuat/menghubungkan akun login ortu secara otomatis
+        (password awal = password default sistem).
+      </div>
+      <div class="full form-actions">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <a class="btn btn-ghost" href="{{ url_for('siswa_list') }}">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
