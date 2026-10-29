@@ -38,13 +38,19 @@
           <label>Ayat Akhir</label>
           <input type="number" name="ayat_akhir" min="1">
         </div>
-        <div>
-          <label>Juz</label>
-          <input type="number" name="juz" step="0.1" min="1" max="30" placeholder="28">
-        </div>
-        <div>
-          <label>Volume (Halaman)</label>
-          <input type="number" name="volume_halaman" step="0.5" min="0" value="1" required>
+        <div class="full form-row-3">
+          <div>
+            <label>Juz</label>
+            <input type="number" name="juz" step="0.1" min="1" max="30" placeholder="28">
+          </div>
+          <div>
+            <label>Volume (Halaman)</label>
+            <input type="number" name="volume_halaman" step="0.5" min="0" value="1" required>
+          </div>
+          <div>
+            <label>Volume (Baris)</label>
+            <input type="number" name="volume_baris" step="1" min="0" value="0">
+          </div>
         </div>
         <div>
           <label>Nilai (0–100)</label>
@@ -84,7 +90,7 @@
       <table class="data">
         <thead>
           <tr>
-            <th>Waktu</th><th>Murid</th><th>Jenis</th><th>Surah</th><th>Vol</th><th>Nilai</th><th>Status</th><th></th>
+            <th>Waktu</th><th>Murid</th><th>Jenis</th><th>Surah</th><th>Halaman</th><th>Baris</th><th>Nilai</th><th>Status</th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -95,6 +101,7 @@
             <td>{{ s.jenis }}</td>
             <td>{{ s.surah }}</td>
             <td>{{ s.volume_halaman }}</td>
+            <td>{{ s.volume_baris or 0 }}</td>
             <td>{{ s.predikat }}</td>
             <td><span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span></td>
             <td>

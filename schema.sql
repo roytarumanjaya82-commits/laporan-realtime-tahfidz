@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS setoran (
   ayat_akhir INT DEFAULT NULL,
   juz DECIMAL(4,1) DEFAULT NULL,
   volume_halaman DECIMAL(6,2) NOT NULL DEFAULT 0,
+  volume_baris DECIMAL(6,2) NOT NULL DEFAULT 0,
   nilai INT NOT NULL DEFAULT 0,
   predikat VARCHAR(40) DEFAULT NULL,
   status ENUM('Lulus','Ulang') NOT NULL DEFAULT 'Lulus',

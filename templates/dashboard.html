@@ -88,7 +88,7 @@
             <td>{{ s.tanggal.strftime('%d/%m %H:%M') }}</td>
             <td>{{ s.nama_siswa }}<br><small>{{ s.nama_kelas }}</small></td>
             <td>{{ s.jenis }}</td>
-            <td>{{ s.volume_halaman }} hlm</td>
+            <td>{{ s.volume_halaman }} hlm{% if s.volume_baris %} · {{ s.volume_baris }} brs{% endif %}</td>
             <td>
               <span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span>
             </td>

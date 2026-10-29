@@ -3,8 +3,11 @@
 {% block auth %}
 <div class="login-page">
   <div class="login-card">
-    <p class="logo">{{ app_title }}</p>
-    <p class="school">{{ school_name }}</p>
+    <div class="login-brand">
+      <img class="login-logo" src="{{ url_for('static', filename='img/logo-smpm22.png') }}" alt="Logo SMP Muhammadiyah 22">
+      <p class="logo">{{ app_title }}</p>
+      <p class="school">{{ school_name }}</p>
+    </div>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}

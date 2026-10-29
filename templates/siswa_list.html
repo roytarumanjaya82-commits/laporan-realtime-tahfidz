@@ -55,14 +55,16 @@
           <td>{{ s.nama_musyrif or '—' }}</td>
           <td><span class="badge badge-{{ 'success' if s.aktif else 'muted' }}">{{ 'Aktif' if s.aktif else 'Nonaktif' }}</span></td>
           <td>
-            <a class="btn btn-sm btn-secondary" href="{{ url_for('laporan_detail', sid=s.id) }}">Laporan</a>
-            {% if session.get('role') == 'admin' %}
-            <a class="btn btn-sm btn-ghost" href="{{ url_for('siswa_edit', sid=s.id) }}">Edit</a>
-            <a class="btn btn-sm btn-ghost" href="{{ url_for('siswa_pindah_musyrif', dari=s.musyrif_id or 0) }}">Pindah</a>
-            <form method="post" action="{{ url_for('siswa_hapus', sid=s.id) }}" style="display:inline" onsubmit="return confirm('Hapus siswa?')">
-              <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
-            </form>
-            {% endif %}
+            <div class="actions-row">
+              <a class="btn btn-sm btn-secondary" href="{{ url_for('laporan_detail', sid=s.id) }}">Laporan</a>
+              {% if session.get('role') == 'admin' %}
+              <a class="btn btn-sm btn-ghost" href="{{ url_for('siswa_edit', sid=s.id) }}">Edit</a>
+              <a class="btn btn-sm btn-ghost" href="{{ url_for('siswa_pindah_musyrif', dari=s.musyrif_id or 0) }}">Pindah</a>
+              <form method="post" action="{{ url_for('siswa_hapus', sid=s.id) }}" style="display:inline" onsubmit="return confirm('Hapus siswa?')">
+                <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
+              </form>
+              {% endif %}
+            </div>
           </td>
         </tr>
         {% else %}

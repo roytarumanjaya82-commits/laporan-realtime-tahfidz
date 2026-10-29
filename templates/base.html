@@ -2,23 +2,31 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>{% block title %}{{ app_title }}{% endblock %} — SMPM 22</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo-smpm22.png') }}">
 </head>
 <body>
 {% if session.get('user_id') %}
 <div class="app-shell">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <aside class="sidebar" id="sidebar">
-    <button class="mobile-toggle" type="button" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-    <div class="brand">
-      <div class="brand-mark">Tahfidz Realtime</div>
-      <div class="brand-sub">{{ school_name }}<br>Jenjang 7–9 · Target 4 Juz</div>
+    <div class="sidebar-head">
+      <div class="brand">
+        <img class="brand-logo" src="{{ url_for('static', filename='img/logo-smpm22.png') }}" alt="Logo SMP Muhammadiyah 22">
+        <div class="brand-text">
+          <div class="brand-mark">Tahfidz Realtime</div>
+          <div class="brand-sub">{{ school_name }}<br>Jenjang 7–9 · Target 4 Juz</div>
+        </div>
+      </div>
+      <button class="sidebar-close" type="button" onclick="closeSidebar()" aria-label="Tutup menu">×</button>
     </div>
-    <nav class="nav">
+    <nav class="nav" onclick="if(event.target.closest('a')) closeSidebar()">
       {% if session.get('role') == 'orang_tua' %}
       <div class="nav-section">Orang Tua</div>
       <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Perkembangan Anak</a>
@@ -56,7 +64,13 @@
 
   <div class="main">
     <header class="topbar">
-      <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+      <div class="topbar-left">
+        <button class="menu-btn" type="button" onclick="openSidebar()" aria-label="Buka menu">
+          <span></span><span></span><span></span>
+        </button>
+        <img class="topbar-logo" src="{{ url_for('static', filename='img/logo-smpm22.png') }}" alt="">
+        <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+      </div>
       <div class="topbar-meta">
         {% if tahun_list and session.get('role') != 'orang_tua' %}
         <form action="#" onchange="if(this.ta.value) location.href='/set-tahun/'+this.ta.value">
@@ -69,9 +83,9 @@
           </select>
         </form>
         {% elif current_ta %}
-        <span class="user-chip">{{ current_ta.nama }} · Sem {{ current_ta.semester }}</span>
+        <span class="user-chip hide-xs">{{ current_ta.nama }} · Sem {{ current_ta.semester }}</span>
         {% endif %}
-        <span class="user-chip">{{ session.get('nama') }} ({{ session.get('role') }})</span>
+        <span class="user-chip">{{ session.get('nama') }} <span class="hide-xs">({{ session.get('role') }})</span></span>
       </div>
     </header>
 
@@ -90,6 +104,21 @@
     </div>
   </div>
 </div>
+<script>
+  function openSidebar() {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').classList.add('show');
+    document.body.classList.add('nav-open');
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+    document.body.classList.remove('nav-open');
+  }
+  window.addEventListener('resize', function () {
+    if (window.innerWidth > 900) closeSidebar();
+  });
+</script>
 {% else %}
   {% block auth %}{% endblock %}
 {% endif %}

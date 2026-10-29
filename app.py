@@ -802,8 +802,8 @@ def setoran():
                 """
                 INSERT INTO setoran
                   (siswa_id, tahun_ajaran_id, tanggal, jenis, surah, ayat_awal, ayat_akhir,
-                   juz, volume_halaman, nilai, predikat, status, catatan, musyrif_id)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                   juz, volume_halaman, volume_baris, nilai, predikat, status, catatan, musyrif_id)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 """,
                 (
                     request.form.get("siswa_id"),
@@ -815,6 +815,7 @@ def setoran():
                     request.form.get("ayat_akhir") or None,
                     request.form.get("juz") or None,
                     float(request.form.get("volume_halaman") or 0),
+                    float(request.form.get("volume_baris") or 0),
                     nilai,
                     predikat,
                     request.form.get("status", "Lulus"),

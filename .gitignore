@@ -26,3 +26,7 @@ Thumbs.db
 # Temp test scripts
 _check_*.py
 _test_*.py
+
+# Screenshot cache (PDF docs tetap di-commit)
+docs/menu_shots/
+docs/menu_shots_ortu/

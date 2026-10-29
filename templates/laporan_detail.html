@@ -7,8 +7,14 @@
 </div>
 
 <div class="report-hero">
-  <h2>{{ siswa.nama }}</h2>
-  <div style="opacity:0.85;font-size:0.95rem">Laporan Hasil Belajar Tahfidz Al-Qur'an Realtime · Jenjang {{ siswa.jenjang }} SMP</div>
+  <div class="report-hero-top">
+    <img class="report-logo" src="{{ url_for('static', filename='img/logo-smpm22.png') }}" alt="Logo SMPM 22">
+    <div>
+      <div class="report-school">{{ school_name }}</div>
+      <h2>{{ siswa.nama }}</h2>
+      <div style="opacity:0.85;font-size:0.95rem">Laporan Hasil Belajar Tahfidz Al-Qur'an Realtime · Jenjang {{ siswa.jenjang }} SMP</div>
+    </div>
+  </div>
   <div class="meta">
     <div><span>Kelas / Jenjang</span><strong>{{ siswa.nama_kelas }} / {{ siswa.jenjang }} SMP</strong></div>
     <div><span>Tahun Ajaran</span><strong>{{ ta.nama }} · Semester {{ ta.semester }}</strong></div>
@@ -62,7 +68,7 @@
           <td>{{ s.tanggal.strftime('%d %b %Y · %H:%M') }} WIB</td>
           <td>{{ s.jenis }}</td>
           <td>{{ s.surah }}</td>
-          <td>{{ s.volume_halaman }} Halaman</td>
+          <td>{{ s.volume_halaman }} Halaman{% if s.volume_baris %} · {{ s.volume_baris }} Baris{% endif %}</td>
           <td>{{ s.predikat }}</td>
           <td><span class="badge badge-{{ 'success' if s.status=='Lulus' else 'warning' }}">{{ s.status }}</span></td>
           <td>{{ s.catatan or '—' }}</td>
